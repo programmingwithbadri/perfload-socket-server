@@ -1,8 +1,12 @@
-const mongoose = require('mongoose')
-mongoose.connect('mongodb://badri:12td0426@ds237357.mlab.com:37357/heroku_xlcgbdkk', {useNewUrlParser: true});
-const Machine = require('./models/Machine');
+const mongoose = require("mongoose");
+mongoose.connect(
+  "mongodb://badri:12td0426@ds237357.mlab.com:37357/heroku_xlcgbdkk",
+  { useNewUrlParser: true }
+);
+const Machine = require("./models/Machine");
 
 function socketMain(io, socket) {
+  let macA;
   console.log("A socket connectd!", socket.id);
 
   socket.on("clientAuth", (key) => {
@@ -38,6 +42,27 @@ function socketMain(io, socket) {
 
   socket.on("perfData", (data) => {
     console.log(data);
+  });
+}
+
+function checkAndAdd(data) {
+  // because we are doing db stuff, js wont wait for the db
+  // so we need to make this a promise
+  return new Promise((resolve, reject) => {
+    Machine.findOne({ macA: data.macA }, (err, doc) => {
+      if (err) {
+        throw err;
+        reject(err);
+      } else if (doc === null) {
+        // the record is not in the db, so add it!
+        let newMachine = new Machine(data);
+        newMachine.save(); //actually save it
+        resolve("added");
+      } else {
+        // it is in the db. just resolve
+        resolve("found");
+      }
+    });
   });
 }
 
