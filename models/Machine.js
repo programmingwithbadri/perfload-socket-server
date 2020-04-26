@@ -7,7 +7,7 @@ const Machine = new Schema({
     freeMem: Number,
     totalMem: Number,
     usedMem: Number,
-    memUseage: Number,
+    memUsage: Number,
     osType: String,
     upTime: Number,
     cpuModel: String,
